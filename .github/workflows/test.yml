@@ -4,24 +4,23 @@ on:
   push:
     branches:
       - main
-  
-  jobs:
-    test-deployment:
-      runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+jobs:
+  test-deployment:
+    runs-on: ubuntu-latest
 
-        - name: ssh login
-          uses: appleleboy/ssh-action@v1.0.3
-          with:
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.USERNAME }}
-            key: ${{ secrets.SSH_KEY }}
-            scripts:
-              cd /
-              cd /var/www/github-actions
-              git pull origin main
-              docker-compose down
-              docker-compose up -d --build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: SSH Login
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/github-actions
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
